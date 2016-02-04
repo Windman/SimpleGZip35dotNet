@@ -1,0 +1,6 @@
+C:\_SourcesC#\SimpleZipUtility\SimpleZipUtility\bin\Debug\SimpleZipUtility.exe.config
+C:\_SourcesC#\SimpleZipUtility\SimpleZipUtility\bin\Debug\SimpleZipUtility.exe
+C:\_SourcesC#\SimpleZipUtility\SimpleZipUtility\bin\Debug\SimpleZipUtility.pdb
+C:\_SourcesC#\SimpleZipUtility\SimpleZipUtility\obj\Debug\SimpleZipUtility.exe
+C:\_SourcesC#\SimpleZipUtility\SimpleZipUtility\obj\Debug\SimpleZipUtility.pdb
+C:\_SourcesC#\SimpleZipUtility\SimpleZipUtility\obj\Debug\SimpleZipUtility.csprojResolveAssemblyReference.cache

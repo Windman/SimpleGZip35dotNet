@@ -1,0 +1,14 @@
+C:\_SourcesC#\SimpleZipUtility\GZipUnitTest\bin\Debug\GZipUnitTest.dll
+C:\_SourcesC#\SimpleZipUtility\GZipUnitTest\bin\Debug\GZipUnitTest.pdb
+C:\_SourcesC#\SimpleZipUtility\GZipUnitTest\bin\Debug\GZipTest.exe
+C:\_SourcesC#\SimpleZipUtility\GZipUnitTest\bin\Debug\GZipTest.pdb
+C:\_SourcesC#\SimpleZipUtility\GZipUnitTest\obj\Debug\GZipUnitTest.csprojResolveAssemblyReference.cache
+C:\_SourcesC#\SimpleZipUtility\GZipUnitTest\obj\Debug\GZipUnitTest.dll
+C:\_SourcesC#\SimpleZipUtility\GZipUnitTest\obj\Debug\GZipUnitTest.pdb
+C:\_SourcesC#\SimpleGZip35dotNet\GZipUnitTest\bin\Debug\GZipUnitTest.dll
+C:\_SourcesC#\SimpleGZip35dotNet\GZipUnitTest\bin\Debug\GZipUnitTest.pdb
+C:\_SourcesC#\SimpleGZip35dotNet\GZipUnitTest\bin\Debug\GZipTest.exe
+C:\_SourcesC#\SimpleGZip35dotNet\GZipUnitTest\bin\Debug\GZipTest.pdb
+C:\_SourcesC#\SimpleGZip35dotNet\GZipUnitTest\obj\Debug\GZipUnitTest.csprojResolveAssemblyReference.cache
+C:\_SourcesC#\SimpleGZip35dotNet\GZipUnitTest\obj\Debug\GZipUnitTest.dll
+C:\_SourcesC#\SimpleGZip35dotNet\GZipUnitTest\obj\Debug\GZipUnitTest.pdb
