@@ -4,7 +4,7 @@ namespace SimpleZipUtility.Interfaces
 {
     public interface IArchivator
     {
-        long ToralBytesRead { get;}
+        long TotalBytesRead { get;}
         bool DoAction(Stream init, Stream archive, long bufferSizeMb);
     }
 }

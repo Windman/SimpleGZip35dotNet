@@ -30,7 +30,7 @@ namespace GZipUnitTest
                 hash = Helper.GetMd5Hash(md5Hash, file);
             }
 
-            var engine = new EngineCompress(new GZipCompress());
+            var engine = new EngineCompress(new GZipCompress(), 100);
             using (MemoryStream original = new MemoryStream(file))
             {
                 using (MemoryStream archive = new MemoryStream())

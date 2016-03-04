@@ -48,7 +48,7 @@ namespace GZipUnitTest
                 hash = Helper.GetMd5Hash(md5Hash, file);
             }
 
-            var engine = new EngineCompress(new GZipCompress());
+            var engine = new EngineCompress(new GZipCompress(), 100);
             using (MemoryStream original = new MemoryStream(file))
             {
                 using (MemoryStream archive = new MemoryStream())
@@ -63,7 +63,7 @@ namespace GZipUnitTest
             {
                 using (MemoryStream original = new MemoryStream())
                 {
-                    EngineDecompress engine2 = new EngineDecompress(new GZipDecompress());
+                    EngineDecompress engine2 = new EngineDecompress(new GZipDecompress(), 100);
                     engine2.DoAction(archive, original, bufferSize);
                     dearchivedFile = original.ToArray();
                 }
@@ -78,7 +78,7 @@ namespace GZipUnitTest
         [TestMethod]
         public void Find_Segment()
         {
-            var engine = new EngineDecompress(new GZipDecompress());
+            var engine = new EngineDecompress(new GZipDecompress(), 100);
             byte[] buffer = new byte[60];
             Array.Copy(Helper.GZIP_HEADER_BYTES, 0, buffer, 10, Helper.GZIP_HEADER_BYTES.Length);
             Array.Copy(Helper.GZIP_HEADER_BYTES, 0, buffer, 50, Helper.GZIP_HEADER_BYTES.Length);

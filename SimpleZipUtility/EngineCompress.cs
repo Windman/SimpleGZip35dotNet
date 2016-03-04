@@ -10,8 +10,8 @@ namespace SimpleZipUtility
 {
     public class EngineCompress: BaseEngine, IArchivator
     {
-        public EngineCompress(IGzipAction gzip)
-            : base(gzip)
+        public EngineCompress(IGzipAction gzip, int queueCapacity)
+            : base(gzip, queueCapacity)
         {
                 
         }
@@ -41,18 +41,10 @@ namespace SimpleZipUtility
             {
                 if (bytesRead < buffer.Length)
                     buffer = buffer.TruncateBuffer(bytesRead);
-                
-                try
-                {
-                    _rw.EnterWriteLock();
-                    byte[] copy = new byte[buffer.Length];
-                    Array.Copy(buffer, copy, buffer.Length);
-                    _sharedQueue.Enqueue(copy);
-                }
-                finally
-                {
-                    _rw.ExitWriteLock();
-                }
+
+                byte[] copy = new byte[buffer.Length];
+                Array.Copy(buffer, copy, buffer.Length);
+                _sharedQueue.Enqueue(copy);
 
                 _totalBytesRead += bytesRead;
                 _mainEvent.Set();

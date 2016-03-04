@@ -10,16 +10,13 @@ namespace SimpleZipUtility
 {
     public abstract class BaseEngine
     {
-        public long ToralBytesRead
+        public long TotalBytesRead
         {
             get { return _totalBytesRead; }
         }
         
-        internal ReaderWriterLockSlim _rw = new ReaderWriterLockSlim();
         internal ManualResetEvent _mainEvent = new ManualResetEvent(false);
         internal ManualResetEvent _completeEvent = new ManualResetEvent(false);
-
-        internal Queue<byte[]> _sharedQueue = new Queue<byte[]>();
 
         internal long _totalBytesRead;
         internal long _bufferSize;
@@ -27,9 +24,12 @@ namespace SimpleZipUtility
         internal volatile bool _readComplete = false;
         internal IGzipAction _gzip;
 
-        public BaseEngine(IGzipAction gzip)
+        internal ConcurrentQueue<byte[]> _sharedQueue;
+
+        public BaseEngine(IGzipAction gzip, int queueCapacity)
         {
-            _gzip = gzip;    
+            _gzip = gzip;
+            _sharedQueue = new ConcurrentQueue<byte[]>(queueCapacity);
         }
 
         public abstract void WriteStreamSegmentsToSharedQueue(Stream init);
@@ -41,38 +41,19 @@ namespace SimpleZipUtility
 
             while (true)
             {
-                try
-                {
-                    _rw.EnterUpgradeableReadLock();
-                    if (_sharedQueue.Count > 0)
-                    {
-                        try
-                        {
-                            _rw.EnterReadLock();
-                            byte[] aux = _sharedQueue.Dequeue();
+                byte[] aux = _sharedQueue.Dequeue();
 
-                            if (aux != null)
-                            {
-                                byte[] processedData = _gzip.DoWork(aux);
-                                stream.Write(processedData, 0, processedData.Length);
-                                processedBytes += aux.Length;
-                            }
-                        }
-                        finally
-                        {
-                            _rw.ExitReadLock();
-                        }
-                    }
-                }
-                finally
+                if (aux != null)
                 {
-                    _rw.ExitUpgradeableReadLock();
+                    byte[] processedData = _gzip.DoWork(aux);
+                    stream.Write(processedData, 0, processedData.Length);
+                    processedBytes += aux.Length;
                 }
 
                 if (!_readComplete)
                     _mainEvent.WaitOne();
 
-                if (_readComplete && _sharedQueue.Count == 0)
+                if (_readComplete && _sharedQueue.IsEmpty())
                     break;
             }
             _completeEvent.Set();

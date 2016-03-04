@@ -12,8 +12,8 @@ namespace SimpleZipUtility
     {
         private static byte[] GZIP_HEADER_BYTES = new byte[] { 0x1f, 0x8b, 8, 0, 0, 0, 0, 0, 4, 0 };
 
-        public EngineDecompress(IGzipAction gzip)
-            : base(gzip)
+        public EngineDecompress(IGzipAction gzip, int queueCapacity)
+            : base(gzip, queueCapacity)
         {
 
         }
@@ -65,7 +65,7 @@ namespace SimpleZipUtility
 
                 if (totalBytes == init.Length)
                 {
-                    Enqueue(newbuffer.ToArray());
+                    _sharedQueue.Enqueue(newbuffer.ToArray());
                 }
                 _mainEvent.Set();
             }
@@ -73,19 +73,7 @@ namespace SimpleZipUtility
             _readComplete = true;
             _mainEvent.Set();
         }
-
-        internal void Enqueue(byte[] data)
-        {
-            try
-            {
-                _rw.EnterWriteLock();
-                _sharedQueue.Enqueue(data);
-            }
-            finally
-            {
-                _rw.ExitWriteLock();
-            }
-        }
+               
 
         internal void ProcessBuffer(List<byte> buffer)
         {
@@ -103,7 +91,7 @@ namespace SimpleZipUtility
                     buffer.Clear();
                     buffer.AddRange(tail);
 
-                    Enqueue(segment);
+                    _sharedQueue.Enqueue(segment);
                 }
                 else
                 {

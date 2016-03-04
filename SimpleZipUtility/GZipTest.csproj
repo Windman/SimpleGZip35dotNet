@@ -42,6 +42,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BaseEngine.cs" />
+    <Compile Include="ConcurrentQueue.cs" />
     <Compile Include="EngineDecompress.cs" />
     <Compile Include="GZipCompress.cs" />
     <Compile Include="GZipDecompress.cs" />
