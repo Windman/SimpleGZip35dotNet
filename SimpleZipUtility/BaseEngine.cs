@@ -1,4 +1,5 @@
 ﻿using SimpleZipUtility.Interfaces;
+using SimpleZipUtility.Queues;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -15,48 +16,29 @@ namespace SimpleZipUtility
             get { return _totalBytesRead; }
         }
         
-        internal ManualResetEvent _mainEvent = new ManualResetEvent(false);
         internal ManualResetEvent _completeEvent = new ManualResetEvent(false);
-
+        
         internal long _totalBytesRead;
         internal long _bufferSize;
 
         internal volatile bool _readComplete = false;
         internal IGzipAction _gzip;
 
-        internal ConcurrentQueue<byte[]> _sharedQueue;
+        internal Concurrent<Element> _concurentQueue;
+        internal Concurrent<Element> _concurentMinPQ;
 
+        internal IQueable<Element> _q;
+        internal IQueable<Element> _minPQ;
         public BaseEngine(IGzipAction gzip, int queueCapacity)
         {
             _gzip = gzip;
-            _sharedQueue = new ConcurrentQueue<byte[]>(queueCapacity);
+            _q = new SimpleQueue(queueCapacity);
+            _concurentQueue = new Concurrent<Element>(_q);
+            _minPQ = new MinPriorityQueue<Element>(queueCapacity);
+            _concurentMinPQ = new Concurrent<Element>(_minPQ);
         }
 
-        public abstract void WriteStreamSegmentsToSharedQueue(Stream init);
-
-        public void DequeueSegmentToStream(Stream stream, long totalBytes)
-        {
-            _mainEvent.WaitOne();
-            long processedBytes = 0;
-
-            while (true)
-            {
-                byte[] aux = _sharedQueue.Dequeue();
-
-                if (aux != null)
-                {
-                    byte[] processedData = _gzip.DoWork(aux);
-                    stream.Write(processedData, 0, processedData.Length);
-                    processedBytes += aux.Length;
-                }
-
-                if (!_readComplete)
-                    _mainEvent.WaitOne();
-
-                if (_readComplete && _sharedQueue.IsEmpty())
-                    break;
-            }
-            _completeEvent.Set();
-        }
+        public abstract void WriteStreamSegmentsToQueue(Stream fromHdd);
+        public abstract void WriteProcessedSegmentsToStream(Stream toHdd);
     }
 }

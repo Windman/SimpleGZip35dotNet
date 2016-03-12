@@ -4,11 +4,13 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 
-namespace SimpleZipUtility
+namespace SimpleZipUtility.Queues
 {
-    public class ConcurrentQueue<T>
+    /*public class ConcurrentQueue<T>
     {
-        Queue<T> _sharedQueue;
+        public int Size {get{return _size;}}
+        
+        private Queue<T> _sharedQueue;
         internal ReaderWriterLockSlim _rw;
 
         private             int _capacity;
@@ -27,8 +29,11 @@ namespace SimpleZipUtility
             try
             {
                 _rw.EnterWriteLock();
-                _sharedQueue.Enqueue(e);
-                _size++;
+                if (IsActive())
+                {
+                    _sharedQueue.Enqueue(e);
+                    _size++;
+                }
             }
             finally
             {
@@ -43,7 +48,7 @@ namespace SimpleZipUtility
             {
                 _rw.EnterUpgradeableReadLock();
                 
-                if (!IsEmpty() && _size < _capacity)
+                if (!IsEmpty())
                 {
                     try
                     {
@@ -72,5 +77,13 @@ namespace SimpleZipUtility
             
             return false;
         }
-    }
+
+        public bool IsActive()
+        {
+            if (_size < _capacity)
+                return true;
+
+            return false;
+        }
+    }*/
 }

@@ -84,8 +84,8 @@ namespace SimpleZipUtility
                 string initPath = args[1];
                 string archPath = args[2];
                 
-                IArchivator compressor = new EngineCompress(new GZipCompress(), 100);
-                IArchivator decompressor = new EngineDecompress(new GZipDecompress(), 100);
+                IArchivator compressor = new CompressEngine(new GZipCompress(), 100);
+                IArchivator decompressor = new DecompressEngine(new GZipDecompress(), 100);
 
                 _ss = new Thread(() => ScreenSaver()) { IsBackground = true };
 

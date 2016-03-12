@@ -8,11 +8,13 @@ using SimpleZipUtility.UtilityExtensions;
 
 namespace SimpleZipUtility
 {
-    public class EngineDecompress : BaseEngine, IArchivator
+    public class DecompressEngine : BaseEngine, IArchivator
     {
+        internal ManualResetEvent _mainEvent = new ManualResetEvent(false);
+
         private static byte[] GZIP_HEADER_BYTES = new byte[] { 0x1f, 0x8b, 8, 0, 0, 0, 0, 0, 4, 0 };
 
-        public EngineDecompress(IGzipAction gzip, int queueCapacity)
+        public DecompressEngine(IGzipAction gzip, int queueCapacity)
             : base(gzip, queueCapacity)
         {
 
@@ -25,8 +27,8 @@ namespace SimpleZipUtility
 
             _bufferSize = bufferSize;
 
-            var t1 = new Thread(() => WriteStreamSegmentsToSharedQueue(input)) { IsBackground = true };
-            var t2 = new Thread(() => DequeueSegmentToStream(output, input.Length));
+            var t1 = new Thread(() => WriteStreamSegmentsToQueue(input)) { IsBackground = true };
+            var t2 = new Thread(() => DequeueSegment(output, input.Length));
 
             t1.Start();
             t2.Start();
@@ -35,7 +37,7 @@ namespace SimpleZipUtility
             return true;
         }
 
-        public override void WriteStreamSegmentsToSharedQueue(Stream init)
+        public override void WriteStreamSegmentsToQueue(Stream init)
         {
             if (init.Length == 0)
                 throw new ArgumentException("empty compressed file");
@@ -52,6 +54,8 @@ namespace SimpleZipUtility
 
             List<byte> newbuffer = new List<byte>();
 
+            int i = 1;
+
             while ((readBytes = init.Read(buffer, 0, buffer.Length)) > 0)
             {
                 if (readBytes < buffer.Length)
@@ -65,7 +69,7 @@ namespace SimpleZipUtility
 
                 if (totalBytes == init.Length)
                 {
-                    _sharedQueue.Enqueue(newbuffer.ToArray());
+                    _concurentQueue.Enqueue(new Element { Number = ++i, Data = newbuffer.ToArray() });
                 }
                 _mainEvent.Set();
             }
@@ -73,11 +77,37 @@ namespace SimpleZipUtility
             _readComplete = true;
             _mainEvent.Set();
         }
-               
+
+        public void DequeueSegment(Stream stream, long totalBytes)
+        {
+            _mainEvent.WaitOne();
+            long processedBytes = 0;
+
+            while (true)
+            {
+                Element aux = _concurentQueue.Dequeue();
+
+                if (aux != null)
+                {
+                    byte[] processedData = _gzip.DoWork(aux.Data);
+                    stream.Write(processedData, 0, processedData.Length);
+                    processedBytes += aux.Data.Length;
+                }
+
+                if (!_readComplete)
+                    _mainEvent.WaitOne();
+
+                if (_readComplete && _q.IsEmpty)
+                    break;
+            }
+            _completeEvent.Set();
+        }
 
         internal void ProcessBuffer(List<byte> buffer)
         {
             byte[] tail = new byte[0];
+
+            int i = 1;
 
             while (buffer.Count > 0)
             {
@@ -91,7 +121,7 @@ namespace SimpleZipUtility
                     buffer.Clear();
                     buffer.AddRange(tail);
 
-                    _sharedQueue.Enqueue(segment);
+                    _concurentQueue.Enqueue(new Element{Number = ++i, Data = segment});
                 }
                 else
                 {
@@ -141,6 +171,11 @@ namespace SimpleZipUtility
             }
 
             return isGzip;
+        }
+
+        public override void WriteProcessedSegmentsToStream(Stream toHdd)
+        {
+            throw new NotImplementedException();
         }
     }
 }

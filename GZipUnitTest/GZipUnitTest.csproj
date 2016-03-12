@@ -54,6 +54,8 @@
     <Compile Include="Helper.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="GZipDecompressTests.cs" />
+    <Compile Include="MinPriorityQueueTests.cs" />
+    <Compile Include="GZipCompressTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\SimpleZipUtility\GZipTest.csproj">

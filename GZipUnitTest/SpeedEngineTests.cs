@@ -16,14 +16,14 @@ namespace GZipUnitTest
         [TestInitialize]
         public void Init()
         {
-            int fileSize = 256; //20 * 1024 * 1024;
+            int fileSize = 1 * 1024 * 1024;
             file = Helper.CreateInMemmoryTestFile(fileSize);
         }
 
         [TestMethod]
         public void Speed_CompressDeCompression_FileSizeGreaterThanBuffer()
         {
-            int bufferSize = 50; //3 * 1024 * 1024; ;
+            int bufferSize = 128 * 1024;
 
             CompressDeCompress(bufferSize);
         }
@@ -31,7 +31,7 @@ namespace GZipUnitTest
         [TestMethod]
         public void Speed_CompressDeCompression_FileSizeEualBufferSize()
         {
-            int bufferSize = 20 * 1024 * 1024; ;
+            int bufferSize = file.Length;
 
             CompressDeCompress(bufferSize);
         }
@@ -39,6 +39,8 @@ namespace GZipUnitTest
 
         private void CompressDeCompress(long bufferSize)
         {
+            int capacity = 10;
+
             byte[] archivedFile;
 
             string hash;
@@ -48,7 +50,7 @@ namespace GZipUnitTest
                 hash = Helper.GetMd5Hash(md5Hash, file);
             }
 
-            var engine = new EngineCompress(new GZipCompress(), 100);
+            var engine = new CompressEngine(new GZipCompress(), capacity);
             using (MemoryStream original = new MemoryStream(file))
             {
                 using (MemoryStream archive = new MemoryStream())
@@ -63,7 +65,7 @@ namespace GZipUnitTest
             {
                 using (MemoryStream original = new MemoryStream())
                 {
-                    EngineDecompress engine2 = new EngineDecompress(new GZipDecompress(), 100);
+                    DecompressEngine engine2 = new DecompressEngine(new GZipDecompress(), 100);
                     engine2.DoAction(archive, original, bufferSize);
                     dearchivedFile = original.ToArray();
                 }
@@ -76,9 +78,9 @@ namespace GZipUnitTest
         }
 
         [TestMethod]
-        public void Find_Segment()
+        public void Decompress_Find_Segment()
         {
-            var engine = new EngineDecompress(new GZipDecompress(), 100);
+            var engine = new DecompressEngine(new GZipDecompress(), 100);
             byte[] buffer = new byte[60];
             Array.Copy(Helper.GZIP_HEADER_BYTES, 0, buffer, 10, Helper.GZIP_HEADER_BYTES.Length);
             Array.Copy(Helper.GZIP_HEADER_BYTES, 0, buffer, 50, Helper.GZIP_HEADER_BYTES.Length);

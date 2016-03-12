@@ -37,16 +37,16 @@ namespace GZipUnitTest
             }
         }
 
-        public static byte[] CreateInMemmoryTestFile(long fileSize)
+        public static byte[] CreateInMemmoryTestFile(long fileSizeBytes)
         {
             byte[] result = null;
             try
             {
-                result = new byte[fileSize];
+                result = new byte[fileSizeBytes];
 
                 Random rand = new Random();
 
-                for (long i = 0; i < fileSize; i++)
+                for (long i = 0; i < fileSizeBytes; i++)
                 {
                     result[i] = (byte)(rand.Next() % 256);
                 }
