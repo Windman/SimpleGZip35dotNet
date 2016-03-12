@@ -9,6 +9,8 @@ using SimpleZipUtility.Queues;
 
 namespace SimpleZipUtility
 {
+    //TODO Добавить ограничение на очереди
+
     public class CompressEngine: BaseEngine, IArchivator
     {
         volatile int _countDown = 0;
@@ -50,12 +52,18 @@ namespace SimpleZipUtility
             byte[] buffer = new byte[_bufferSize];
             while ((bytesRead = init.Read(buffer, 0, buffer.Length)) > 0)
             {
+                if (!_concurentQueue.IsActive())
+                {
+                    _stopEventQ.Reset();
+                    _stopEventQ.WaitOne();
+                }
                 if (bytesRead < buffer.Length)
                     buffer = buffer.TruncateBuffer(bytesRead);
 
                 byte[] copy = new byte[buffer.Length];
                 Array.Copy(buffer, copy, buffer.Length);
                 _concurentQueue.Enqueue(new Element { Number = i++, Data = copy });
+                copy = null;
 
                 _totalBytesRead += bytesRead;
             }
@@ -66,7 +74,7 @@ namespace SimpleZipUtility
         {
             while (_countDown < _processors || !_concurentMinPQ.IsEmpty())
             {
-                if (_countDown == _processors)
+                if (!_concurentMinPQ.IsEmpty())
                 {
                     Element aux = _concurentMinPQ.Dequeue();
 
@@ -76,12 +84,19 @@ namespace SimpleZipUtility
                         aux = null;
                     }
                 }
+
+                if (_concurentMinPQ.IsEmpty() && _concurentMinPQ.IsEmpty())
+                {
+                    _stopEventMinPQ.Set();
+                    _stopEventQ.Set();
+                }
+                
             }
 
             _completeEvent.Set();
         }
 
-        public void ProcessSegment(Concurrent<Element> q)
+        public void ProcessSegment(Concurrent<Element> minPQ)
         {
             while (!_readComplete || !_concurentQueue.IsEmpty())
             {
@@ -90,8 +105,14 @@ namespace SimpleZipUtility
                 if (aux != null)
                 {
                     byte[] processedData = _gzip.DoWork(aux.Data);
-                    q.Enqueue(new Element { Number = aux.Number, Data = processedData});
+                    minPQ.Enqueue(new Element { Number = aux.Number, Data = processedData});
                     aux = null;
+                }
+
+                if (!minPQ.IsActive())
+                {
+                    _stopEventMinPQ.Reset();
+                    _stopEventMinPQ.WaitOne();
                 }
             }
 

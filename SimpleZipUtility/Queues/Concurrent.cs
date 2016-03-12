@@ -75,17 +75,17 @@ namespace SimpleZipUtility.Queues
             }
         }
 
-        public int Size()
+        public bool IsActive()
         {
             try
             {
                 _rw.EnterUpgradeableReadLock();
-                return _queue.Size;
+                return _queue.IsActive;
             }
             finally
             {
                 _rw.ExitUpgradeableReadLock();
             }
-        } 
+        }
     }
 }

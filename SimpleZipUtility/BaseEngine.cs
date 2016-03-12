@@ -17,7 +17,9 @@ namespace SimpleZipUtility
         }
         
         internal ManualResetEvent _completeEvent = new ManualResetEvent(false);
-        
+        internal ManualResetEvent _stopEventMinPQ = new ManualResetEvent(false);
+        internal ManualResetEvent _stopEventQ = new ManualResetEvent(false);
+
         internal long _totalBytesRead;
         internal long _bufferSize;
 
@@ -27,8 +29,9 @@ namespace SimpleZipUtility
         internal Concurrent<Element> _concurentQueue;
         internal Concurrent<Element> _concurentMinPQ;
 
-        internal IQueable<Element> _q;
-        internal IQueable<Element> _minPQ;
+        private IQueable<Element> _q;
+        private IQueable<Element> _minPQ;
+        
         public BaseEngine(IGzipAction gzip, int queueCapacity)
         {
             _gzip = gzip;
