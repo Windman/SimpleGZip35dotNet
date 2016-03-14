@@ -54,8 +54,8 @@ namespace SimpleZipUtility
             while ((bytesRead = init.Read(buffer, 0, buffer.Length)) > 0)
             {
                 if (_concurentQueue.Size > _capacity) //Queue limit
-                    continue;
-
+                    _stopEvent.WaitOne();
+                
                 if (bytesRead < buffer.Length)
                     buffer = buffer.TruncateBuffer(bytesRead);
 
@@ -66,8 +66,9 @@ namespace SimpleZipUtility
 
                 _totalBytesRead += bytesRead;
 
-                Debug.WriteLine(string.Format("QueueSize: {0}, MinPQSize: {1}, TotalKBytes Read: {2}", _concurentQueue.Size, _concurentMinPQ.Size, _totalBytesRead/1024));
-
+#if DEBUG
+                //Debug.WriteLine(string.Format("QueueSize: {0}, MinPQSize: {1}, TotalKBytes Read: {2}", _concurentQueue.Size, _concurentMinPQ.Size, _totalBytesRead/1024));
+#endif
             }
             _readComplete = true;
         }
@@ -81,10 +82,16 @@ namespace SimpleZipUtility
 
                 if (min != null && min.Number - prevNumber == 1)
                 {
+#if DEBUG
+                    Debug.WriteLine(string.Format("N:{0}",min.Number));
+#endif
                     min = _concurentMinPQ.Dequeue();
                     toHdd.Write(min.Data, 0, min.Data.Length);
                     prevNumber = min.Number;
                     min = null;
+
+                    if (_concurentMinPQ.IsEmpty) //Queue limit
+                        _stopEvent.Set();
                 }
             }
 

@@ -23,7 +23,7 @@ namespace GZipUnitTest
         [TestMethod]
         public void Speed_CompressDeCompression_FileSizeGreaterThanBuffer()
         {
-            int bufferSize = 128 * 1024;
+            int bufferSize = 1 * 1024 * 1024;
 
             CompressDeCompress(bufferSize);
         }
