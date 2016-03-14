@@ -17,7 +17,6 @@ namespace SimpleZipUtility
         }
         
         internal ManualResetEvent _completeEvent = new ManualResetEvent(false);
-        internal ManualResetEvent _stopEvent = new ManualResetEvent(false);
         
         internal long _totalBytesRead;
         internal long _bufferSize;

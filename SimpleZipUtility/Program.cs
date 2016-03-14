@@ -72,7 +72,7 @@ namespace SimpleZipUtility
         
         static void Main(string[] args)
         {
-            int capaticy = 100;
+            int capaticy = 50;
 
             Console.CancelKeyPress += (sender, eventArgs) =>
             {

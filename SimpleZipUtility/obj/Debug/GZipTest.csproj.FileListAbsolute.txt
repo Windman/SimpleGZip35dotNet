@@ -5,7 +5,8 @@ C:\_SourcesC#\SimpleZipUtility\SimpleZipUtility\obj\Debug\GZipTest.exe
 C:\_SourcesC#\SimpleZipUtility\SimpleZipUtility\obj\Debug\GZipTest.pdb
 C:\_SourcesC#\SimpleZipUtility\SimpleZipUtility\obj\Debug\GZipTest.csprojResolveAssemblyReference.cache
 C:\_SourcesC#\SimpleGZip35dotNet\SimpleZipUtility\bin\Debug\GZipTest.exe.config
-C:\_SourcesC#\SimpleGZip35dotNet\SimpleZipUtility\obj\Debug\GZipTest.exe
-C:\_SourcesC#\SimpleGZip35dotNet\SimpleZipUtility\obj\Debug\GZipTest.pdb
 C:\_SourcesC#\SimpleGZip35dotNet\SimpleZipUtility\bin\Debug\GZipTest.exe
 C:\_SourcesC#\SimpleGZip35dotNet\SimpleZipUtility\bin\Debug\GZipTest.pdb
+C:\_SourcesC#\SimpleGZip35dotNet\SimpleZipUtility\obj\Debug\GZipTest.exe
+C:\_SourcesC#\SimpleGZip35dotNet\SimpleZipUtility\obj\Debug\GZipTest.pdb
+C:\_SourcesC#\SimpleGZip35dotNet\SimpleZipUtility\obj\Debug\GZipTest.csprojResolveAssemblyReference.cache
