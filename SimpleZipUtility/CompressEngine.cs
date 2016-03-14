@@ -54,8 +54,10 @@ namespace SimpleZipUtility
             while ((bytesRead = init.Read(buffer, 0, buffer.Length)) > 0)
             {
                 if (_concurentQueue.Size > _capacity) //Queue limit
+                {
+                    _stopEvent.Reset();
                     _stopEvent.WaitOne();
-                
+                }
                 if (bytesRead < buffer.Length)
                     buffer = buffer.TruncateBuffer(bytesRead);
 
@@ -90,7 +92,7 @@ namespace SimpleZipUtility
                     prevNumber = min.Number;
                     min = null;
 
-                    if (_concurentMinPQ.IsEmpty) //Queue limit
+                    if (_concurentQueue.Size == 0 && _concurentMinPQ.IsEmpty) //Queue limit
                         _stopEvent.Set();
                 }
             }
