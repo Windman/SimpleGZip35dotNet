@@ -44,13 +44,24 @@ namespace SimpleZipUtility.Queues
         public T Dequeue()
         {
             if (IsEmpty) throw new Exception("Priority queue is empty");
-            exchange(1, N);
+            
+            Exchange(1, N);
+            
             T min = pq[N--];
+            
             Sink(1);
+            
             pq[N + 1] = default(T);
+            
             if ((N > 0) && (N == (pq.Length - 1) / 4)) 
                 resize(pq.Length / 2);
+            
             return min;
+        }
+
+        public T PeekElement()
+        {
+            return pq[1];
         }
 
         private void resize(int capacity)
@@ -67,7 +78,7 @@ namespace SimpleZipUtility.Queues
         {
             while (k > 1 && greater(k / 2, k))
             {
-                exchange(k, k / 2);
+                Exchange(k, k / 2);
                 k = k / 2;
             }
         }
@@ -79,7 +90,7 @@ namespace SimpleZipUtility.Queues
                 int j = 2 * k;
                 if (j < N && greater(j, j + 1)) j++;
                 if (!greater(k, j)) break;
-                exchange(k, j);
+                Exchange(k, j);
                 k = j;
             }
         }
@@ -91,7 +102,7 @@ namespace SimpleZipUtility.Queues
             return ((IComparable<T>)pq[i]).CompareTo(pq[j]) > 0;
         }
 
-        private void exchange(int i, int j)
+        private void Exchange(int i, int j)
         {
             T swap = pq[i];
             pq[i] = pq[j];
@@ -99,5 +110,8 @@ namespace SimpleZipUtility.Queues
         }
 
         #endregion
+
+
+       
     }
 }

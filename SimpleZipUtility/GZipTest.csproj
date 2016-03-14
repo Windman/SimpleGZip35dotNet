@@ -46,7 +46,6 @@
     <Compile Include="Queues\Concurrent.cs" />
     <Compile Include="Queues\IQueable.cs" />
     <Compile Include="Queues\MinPriorityQueue.cs" />
-    <Compile Include="Queues\ConcurrentQueue.cs" />
     <Compile Include="DecompressEngine.cs" />
     <Compile Include="GZipCompress.cs" />
     <Compile Include="GZipDecompress.cs" />

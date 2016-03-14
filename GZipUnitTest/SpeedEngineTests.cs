@@ -16,7 +16,7 @@ namespace GZipUnitTest
         [TestInitialize]
         public void Init()
         {
-            int fileSize = 1 * 1024 * 1024;
+            int fileSize = 20 * 1024 * 1024;
             file = Helper.CreateInMemmoryTestFile(fileSize);
         }
 

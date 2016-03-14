@@ -11,6 +11,12 @@ namespace SimpleZipUtility.Queues
         private ReaderWriterLockSlim _rw;
         private IQueable<T> _queue;
 
+        public bool IsEmpty { get { return _isEmpty; } }
+        public int Size { get { return _size; } }
+
+        private bool _isEmpty;
+        private int _size;
+
         public Concurrent(IQueable<T> queue)
         {
             _rw = new ReaderWriterLockSlim();
@@ -23,10 +29,9 @@ namespace SimpleZipUtility.Queues
             {
                 _rw.EnterWriteLock();
                 _queue.Enqueue(e);
-                //if (_queue.IsActive)
-                //{
-                //    _queue.Enqueue(e);
-                //}
+                
+                _size = _queue.Size;
+                _isEmpty = _queue.IsEmpty;
             }
             finally
             {
@@ -47,6 +52,9 @@ namespace SimpleZipUtility.Queues
                     {
                         _rw.EnterReadLock();
                         aux = _queue.Dequeue();
+                        
+                        _size = _queue.Size;
+                        _isEmpty = _queue.IsEmpty;
                     }
                     finally
                     {
@@ -62,30 +70,32 @@ namespace SimpleZipUtility.Queues
             return aux;
         }
 
-        public bool IsEmpty() 
-        { 
-            try
-            {
-                _rw.EnterUpgradeableReadLock();
-                return _queue.IsEmpty;
-            }
-            finally
-            {
-                _rw.ExitUpgradeableReadLock();
-            }
-        }
-
-        public bool IsActive()
+        public T Peak()
         {
+            T aux = default(T);
             try
             {
                 _rw.EnterUpgradeableReadLock();
-                return _queue.IsActive;
+
+                if (!_queue.IsEmpty)
+                {
+                    try
+                    {
+                        _rw.EnterReadLock();
+                        aux = _queue.PeekElement();
+                    }
+                    finally
+                    {
+                        _rw.ExitReadLock();
+                    }
+                }
             }
             finally
             {
                 _rw.ExitUpgradeableReadLock();
             }
+
+            return aux;
         }
     }
 }

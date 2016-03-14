@@ -14,6 +14,11 @@ namespace SimpleZipUtility.Queues
             _capacity = capacity;
         }
 
+        public Element PeekElement()
+        {
+            return base.Peek();
+        }
+        
         bool IQueable<Element>.IsEmpty
         {
             get
@@ -24,19 +29,7 @@ namespace SimpleZipUtility.Queues
                 return false;
             }
         }
-
-        bool IQueable<Element>.IsActive
-        {
-            get
-            {
-                if (Count < _capacity)
-                    return true;
-
-                return false;
-            }
-        }
-
-
+        
         public int Size
         {
             get { return Count; }

@@ -72,6 +72,8 @@ namespace SimpleZipUtility
         
         static void Main(string[] args)
         {
+            int capaticy = 100;
+
             Console.CancelKeyPress += (sender, eventArgs) =>
             {
                 Console.WriteLine();
@@ -85,9 +87,9 @@ namespace SimpleZipUtility
                 bool compress = string.Equals(args[0], COMPRESS);
                 string initPath = args[1];
                 string archPath = args[2];
-                
-                IArchivator compressor = new CompressEngine(new GZipCompress(), 100);
-                IArchivator decompressor = new DecompressEngine(new GZipDecompress(), 100);
+
+                IArchivator compressor = new CompressEngine(new GZipCompress(), capaticy);
+                IArchivator decompressor = new DecompressEngine(new GZipDecompress(), capaticy);
 
                 _ss = new Thread(() => ScreenSaver()) { IsBackground = true };
 

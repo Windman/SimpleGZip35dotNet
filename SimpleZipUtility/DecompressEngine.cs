@@ -97,7 +97,7 @@ namespace SimpleZipUtility
                 if (!_readComplete)
                     _mainEvent.WaitOne();
 
-                if (_readComplete && _concurentQueue.IsEmpty())
+                if (_readComplete && _concurentQueue.IsEmpty)
                     break;
             }
             _completeEvent.Set();
