@@ -25,8 +25,8 @@ namespace SimpleZipUtility
         internal volatile bool _readComplete = false;
         internal IGzipAction _gzip;
 
-        internal Concurrent<Element> _concurentQueue;
-        internal Concurrent<Element> _concurentMinPQ;
+        internal ConcurrentQueue<Element> _concurentQueue;
+        internal ConcurrentQueue<Element> _concurentMinPQ;
 
         private IQueable<Element> _q;
         private IQueable<Element> _minPQ;
@@ -35,9 +35,9 @@ namespace SimpleZipUtility
         {
             _gzip = gzip;
             _q = new SimpleQueue();
-            _concurentQueue = new Concurrent<Element>(_q);
+            _concurentQueue = new ConcurrentQueue<Element>(_q);
             _minPQ = new MinPriorityQueue<Element>(queueCapacity);
-            _concurentMinPQ = new Concurrent<Element>(_minPQ);
+            _concurentMinPQ = new ConcurrentQueue<Element>(_minPQ);
         }
 
         public abstract void WriteStreamSegmentsToQueue(Stream fromHdd);

@@ -6,7 +6,7 @@ using System.Threading;
 
 namespace SimpleZipUtility.Queues
 {
-    public class Concurrent<T>
+    public class ConcurrentQueue<T>
     {
         private ReaderWriterLockSlim _rw;
         private IQueable<T> _queue;
@@ -17,7 +17,7 @@ namespace SimpleZipUtility.Queues
         private bool _isEmpty;
         private int _size;
 
-        public Concurrent(IQueable<T> queue)
+        public ConcurrentQueue(IQueable<T> queue)
         {
             _rw = new ReaderWriterLockSlim();
             _queue = queue;

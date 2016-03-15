@@ -100,7 +100,7 @@ namespace SimpleZipUtility
             _completeEvent.Set();
         }
 
-        public void ProcessSegment(Concurrent<Element> minPQ)
+        public void ProcessSegment(ConcurrentQueue<Element> minPQ)
         {
             while (!_readComplete || !_concurentQueue.IsEmpty)
             {
