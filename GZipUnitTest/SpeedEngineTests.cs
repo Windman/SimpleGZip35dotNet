@@ -12,10 +12,13 @@ namespace GZipUnitTest
     {
         IArchivator engine;
         byte[] file;
+        int capacity;
 
         [TestInitialize]
         public void Init()
         {
+            capacity = 10;
+
             int fileSize = 20 * 1024 * 1024;
             file = Helper.CreateInMemmoryTestFile(fileSize);
         }
@@ -23,7 +26,7 @@ namespace GZipUnitTest
         [TestMethod]
         public void Speed_CompressDeCompression_FileSizeGreaterThanBuffer()
         {
-            int bufferSize = 1 * 1024 * 1024;
+            int bufferSize = 128 * 1024;
 
             CompressDeCompress(bufferSize);
         }
@@ -39,8 +42,6 @@ namespace GZipUnitTest
 
         private void CompressDeCompress(long bufferSize)
         {
-            int capacity = 10;
-
             byte[] archivedFile;
 
             string hash;

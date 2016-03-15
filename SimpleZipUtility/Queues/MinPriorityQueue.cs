@@ -9,34 +9,21 @@ namespace SimpleZipUtility.Queues
     {
         private T[] pq;
         private int N;
-        private int _capacity;
 
         public bool IsEmpty { get { return N == 0; } }
-
-        public bool IsActive
-        {
-            get
-            {
-                if (Size < _capacity)
-                    return true;
-
-                return false;
-            }
-        }
-
+                
         public int Size { get { return N; } }
 
         public MinPriorityQueue(int capacity)
         {
             pq = new T[capacity + 1];
             N = 0;
-            _capacity = capacity;
         }
 
         public void Enqueue(T e)
         {
             if (N == pq.Length - 1) 
-                resize(2 * pq.Length);
+                Resize(2 * pq.Length);
             pq[++N] = e;
             Swim(N);
         }
@@ -54,7 +41,7 @@ namespace SimpleZipUtility.Queues
             pq[N + 1] = default(T);
             
             if ((N > 0) && (N == (pq.Length - 1) / 4)) 
-                resize(pq.Length / 2);
+                Resize(pq.Length / 2);
             
             return min;
         }
@@ -64,7 +51,7 @@ namespace SimpleZipUtility.Queues
             return pq[1];
         }
 
-        private void resize(int capacity)
+        private void Resize(int capacity)
         {
             T[] temp = new T[capacity];
             for (int i = 1; i <= N; i++)
@@ -76,7 +63,7 @@ namespace SimpleZipUtility.Queues
 
         private void Swim(int k)
         {
-            while (k > 1 && greater(k / 2, k))
+            while (k > 1 && Greater(k / 2, k))
             {
                 Exchange(k, k / 2);
                 k = k / 2;
@@ -88,8 +75,8 @@ namespace SimpleZipUtility.Queues
             while (2 * k <= N)
             {
                 int j = 2 * k;
-                if (j < N && greater(j, j + 1)) j++;
-                if (!greater(k, j)) break;
+                if (j < N && Greater(j, j + 1)) j++;
+                if (!Greater(k, j)) break;
                 Exchange(k, j);
                 k = j;
             }
@@ -97,7 +84,7 @@ namespace SimpleZipUtility.Queues
 
         #region Helper functions
 
-        private bool greater(int i, int j)
+        private bool Greater(int i, int j)
         {
             return ((IComparable<T>)pq[i]).CompareTo(pq[j]) > 0;
         }
@@ -110,8 +97,5 @@ namespace SimpleZipUtility.Queues
         }
 
         #endregion
-
-
-       
     }
 }

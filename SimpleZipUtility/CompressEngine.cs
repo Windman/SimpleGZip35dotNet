@@ -12,7 +12,7 @@ namespace SimpleZipUtility
 {
     public class CompressEngine: BaseEngine, IArchivator
     {
-        volatile int _countDown = 0;
+        int _countDown = 0;
         readonly int _processors = Environment.ProcessorCount;
 
         private int _capacity;
@@ -55,8 +55,8 @@ namespace SimpleZipUtility
             {
                 if (_concurentQueue.Size > _capacity) //Queue limit
                 {
-                    _stopEvent.Reset();
-                    _stopEvent.WaitOne();
+                    _stopReadEvent.Reset();
+                    _stopReadEvent.WaitOne();
                 }
                 if (bytesRead < buffer.Length)
                     buffer = buffer.TruncateBuffer(bytesRead);
@@ -85,15 +85,15 @@ namespace SimpleZipUtility
                 if (min != null && min.Number - prevNumber == 1)
                 {
 #if DEBUG
-                    Debug.WriteLine(string.Format("N:{0}",min.Number));
+                    //Debug.WriteLine(string.Format("N:{0}",min.Number));
 #endif
                     min = _concurentMinPQ.Dequeue();
                     toHdd.Write(min.Data, 0, min.Data.Length);
                     prevNumber = min.Number;
                     min = null;
 
-                    if (_concurentQueue.Size == 0 && _concurentMinPQ.IsEmpty) //Queue limit
-                        _stopEvent.Set();
+                    if (_concurentQueue.IsEmpty && _concurentMinPQ.IsEmpty) //Queue limit
+                        _stopReadEvent.Set();
                 }
             }
 
@@ -106,7 +106,7 @@ namespace SimpleZipUtility
             {
                 if (minPQ.Size > _capacity) //MinPQ limit
                     continue;
-
+                
                 Element aux = _concurentQueue.Dequeue();
 
                 if (aux != null)

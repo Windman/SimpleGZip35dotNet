@@ -12,6 +12,5 @@ namespace SimpleZipUtility.Queues
         void Enqueue(T e);
         T Dequeue();
         T PeekElement();
-        
     }
 }

@@ -7,11 +7,8 @@ namespace SimpleZipUtility.Queues
 {
     public class SimpleQueue: Queue<Element>, IQueable<Element> 
     {
-        int _capacity;
-
-        public SimpleQueue(int capacity)
+        public SimpleQueue()
         {
-            _capacity = capacity;
         }
 
         public Element PeekElement()

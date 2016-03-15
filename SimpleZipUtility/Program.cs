@@ -61,7 +61,7 @@ namespace SimpleZipUtility
         private const int STREAM_BUFFER_SIZE = 2 << 18; //512Kb
         private const int ARCHIVE_SIZE = 3 * 1024 * 1024; //3Mb
 
-        private static ManualResetEvent _mainEvent = new ManualResetEvent(false);
+        private static AutoResetEvent _mainEvent = new AutoResetEvent(false);
 
         private static volatile bool _isCompleted = false;
         private static volatile bool _isCancelled = false;
@@ -208,7 +208,6 @@ namespace SimpleZipUtility
                 Console.WriteLine("Incorrect action");
                 return false;
             }
-            
 
             return true;
         }
