@@ -26,7 +26,7 @@ namespace GZipUnitTest
         [TestMethod]
         public void Speed_CompressDeCompression_FileSizeGreaterThanBuffer()
         {
-            int bufferSize = 128 * 1024;
+            int bufferSize = 1 * 1024 * 1024;
 
             CompressDeCompress(bufferSize);
         }
@@ -66,7 +66,7 @@ namespace GZipUnitTest
             {
                 using (MemoryStream original = new MemoryStream())
                 {
-                    DecompressEngine engine2 = new DecompressEngine(new GZipDecompress(), 100);
+                    DecompressEngine engine2 = new DecompressEngine(new GZipDecompress(), capacity);
                     engine2.DoAction(archive, original, bufferSize);
                     dearchivedFile = original.ToArray();
                 }
