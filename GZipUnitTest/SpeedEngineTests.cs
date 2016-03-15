@@ -19,14 +19,14 @@ namespace GZipUnitTest
         {
             capacity = 10;
 
-            int fileSize = 20 * 1024 * 1024;
+            int fileSize = 10 * 1024 * 1024;
             file = Helper.CreateInMemmoryTestFile(fileSize);
         }
 
         [TestMethod]
         public void Speed_CompressDeCompression_FileSizeGreaterThanBuffer()
         {
-            int bufferSize = 1 * 1024 * 1024;
+            int bufferSize = 512 * 1024;
 
             CompressDeCompress(bufferSize);
         }

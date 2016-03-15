@@ -105,7 +105,7 @@ namespace SimpleZipUtility
                 if (min != null && min.Number - prevNumber == 1)
                 {
 #if DEBUG
-                    Debug.WriteLine(string.Format("N:{0}",min.Number));
+                    //Debug.WriteLine(string.Format("N:{0}",min.Number));
 #endif
                     min = _concurentMinPQ.Dequeue();
                     toHdd.Write(min.Data, 0, min.Data.Length);
