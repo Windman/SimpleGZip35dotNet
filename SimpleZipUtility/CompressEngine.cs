@@ -15,7 +15,8 @@ namespace SimpleZipUtility
         public CompressEngine(IGzipAction gzip, int queueCapacity)
             : base(gzip, queueCapacity)
         {
-           
+            _q.QueueOverflow += QueueOverflow;
+            _q.EmptyQueue += EmptyQueue;
         }
 
         public override void WriteStreamSegmentsToQueue(Stream init)
@@ -25,11 +26,6 @@ namespace SimpleZipUtility
             byte[] buffer = new byte[_bufferSize];
             while ((bytesRead = init.Read(buffer, 0, buffer.Length)) > 0)
             {
-                if (_concurentQueue.Size > _capacity) //Queue limit
-                {
-                    _stopReadEvent.Reset();
-                    _stopReadEvent.WaitOne();
-                }
                 if (bytesRead < buffer.Length)
                     buffer = buffer.TruncateBuffer(bytesRead);
 
@@ -45,6 +41,19 @@ namespace SimpleZipUtility
 #endif
             }
             _readComplete = true;
+        }
+
+        private void QueueOverflow(object sender)
+        {
+            _stopReadEvent.Reset();
+            Debug.WriteLine("Stop read from file");
+            _stopReadEvent.WaitOne();
+        }
+
+        private void EmptyQueue(object sender)
+        {
+            _stopReadEvent.Reset();
+            Debug.WriteLine("Start read from file");
         }
     }
 }

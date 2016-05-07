@@ -6,7 +6,7 @@ using System.Threading;
 
 namespace SimpleZipUtility.Queues
 {
-    public class ConcurrentQueue<T>
+    public class ConcurrentQueue<T>: IQueable<T>
     {
         private ReaderWriterLockSlim _rw;
         private IQueable<T> _queue;
@@ -69,8 +69,8 @@ namespace SimpleZipUtility.Queues
 
             return aux;
         }
-
-        public T Peak()
+        
+        public T PeekElement()
         {
             T aux = default(T);
             try
@@ -97,5 +97,10 @@ namespace SimpleZipUtility.Queues
 
             return aux;
         }
+
+        public event QueueOverflowEventHandler QueueOverflow;
+
+
+        public event EmptyQueueEventHandler EmptyQueue;
     }
 }

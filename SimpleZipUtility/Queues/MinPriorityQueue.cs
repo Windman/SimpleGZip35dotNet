@@ -7,6 +7,8 @@ namespace SimpleZipUtility.Queues
 {
     public class MinPriorityQueue<T> : IQueable<T>
     {
+        private Object stub = new Object();
+
         private T[] pq;
         private int N;
 
@@ -30,20 +32,23 @@ namespace SimpleZipUtility.Queues
 
         public T Dequeue()
         {
-            if (IsEmpty) throw new Exception("Priority queue is empty");
-            
-            Exchange(1, N);
-            
-            T min = pq[N--];
-            
-            Sink(1);
-            
-            pq[N + 1] = default(T);
-            
-            if ((N > 0) && (N == (pq.Length - 1) / 4)) 
-                Resize(pq.Length / 2);
-            
-            return min;
+            lock(stub)
+            {
+                if (IsEmpty) throw new Exception("Priority queue is empty");
+
+                Exchange(1, N);
+
+                T min = pq[N--];
+
+                Sink(1);
+
+                pq[N + 1] = default(T);
+
+                if ((N > 0) && (N == (pq.Length - 1) / 4))
+                    Resize(pq.Length / 2);
+
+                return min;
+            }
         }
 
         public T PeekElement()
@@ -97,5 +102,10 @@ namespace SimpleZipUtility.Queues
         }
 
         #endregion
+        
+        public event QueueOverflowEventHandler QueueOverflow;
+
+
+        public event EmptyQueueEventHandler EmptyQueue;
     }
 }

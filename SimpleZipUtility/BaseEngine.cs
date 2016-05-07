@@ -28,30 +28,32 @@ namespace SimpleZipUtility
         internal volatile bool _readComplete = false;
         internal IGzipAction _gzip;
 
-        internal ConcurrentQueue<Element> _concurentQueue;
-        internal ConcurrentQueue<Element> _concurentMinPQ;
+        internal IQueable<Element> _concurentQueue;
+        internal IQueable<Element> _concurentMinPQ;
 
         internal int _capacity;
-        internal int _countThreads;
+        internal int _processDone;
 
-        private IQueable<Element> _q;
+        internal IQueable<Element> _q;
         private IQueable<Element> _minPQ;
         
         public BaseEngine(IGzipAction gzip, int queueCapacity)
         {
             _gzip = gzip;
-            _q = new SimpleQueue();
+            _q = new SimpleQueue(queueCapacity);
             _minPQ = new MinPriorityQueue<Element>(queueCapacity);
 
-            _concurentQueue = new ConcurrentQueue<Element>(_q);
-            _concurentMinPQ = new ConcurrentQueue<Element>(_minPQ);
+            //_concurentQueue = new ConcurrentQueue<Element>(_q);
+            //_concurentMinPQ = new ConcurrentQueue<Element>(_minPQ);
+            _concurentQueue = _q;
+            _concurentMinPQ = _minPQ;
 
             _processors = Environment.ProcessorCount;
 
             _capacity = queueCapacity;
-            _countThreads = 0;
+            _processDone = 0;
         }
-
+        
         public bool DoAction(Stream init, Stream archive, long bufferSize)
         {
             if (init.Length == 0)
@@ -60,14 +62,19 @@ namespace SimpleZipUtility
             _bufferSize = bufferSize;
 
             var t1 = new Thread(() => WriteStreamSegmentsToQueue(init));
+            t1.Name = "Read file";
             t1.Start();
 
+            Thread[] threads = new Thread[_processors];
             for (int i = 0; i < _processors; i++)
             {
-                new Thread(() => ProcessSegment(_concurentMinPQ)).Start();
+                threads[i] = new Thread(() => ProcessSegment(_concurentMinPQ));
+                threads[i].Name = "Process " + i;
+                threads[i].Start();
             }
 
             var t2 = new Thread(() => WriteProcessedSegmentsToStream(archive));
+            t2.Name = "Write file";
             t2.Start();
 
             _completeEvent.WaitOne();
@@ -75,7 +82,7 @@ namespace SimpleZipUtility
             return true;
         }
 
-        public void ProcessSegment(ConcurrentQueue<Element> minPQ)
+        public void ProcessSegment(IQueable<Element> minPQ)
         {
             while (!_readComplete || !_concurentQueue.IsEmpty)
             {
@@ -92,20 +99,22 @@ namespace SimpleZipUtility
                 }
             }
 
-            Interlocked.Increment(ref _countThreads);
+            Interlocked.Increment(ref _processDone);
         }
 
         public void WriteProcessedSegmentsToStream(Stream toHdd)
         {
             int prevNumber = 0;
-            while (_countThreads < _processors || !_concurentMinPQ.IsEmpty)
+            while (_processDone < _processors || !_concurentMinPQ.IsEmpty)
             {
-                Element min = _concurentMinPQ.Peak();
+                Element min = _concurentMinPQ.PeekElement();
 
+                //Ошибка min.Number - prevNumber придумать другие решение
+                //Видимо ошибка синхронизации потоков
                 if (min != null && min.Number - prevNumber == 1)
                 {
 #if DEBUG
-                    //Debug.WriteLine(string.Format("N:{0}",min.Number));
+                    Debug.WriteLine(string.Format("N:{0}", min.Number));
 #endif
                     min = _concurentMinPQ.Dequeue();
                     toHdd.Write(min.Data, 0, min.Data.Length);

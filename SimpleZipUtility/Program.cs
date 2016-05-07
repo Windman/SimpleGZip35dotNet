@@ -68,14 +68,14 @@ namespace SimpleZipUtility
                 IArchivator compressor = new CompressEngine(new GZipCompress(), capaticy);
                 IArchivator decompressor = new DecompressEngine(new GZipDecompress(), capaticy);
 
-                _ss = new Thread(() => ScreenSaver()) { IsBackground = true };
+                _ss = new Thread(() => ScreenSaver()) { IsBackground = true, Name = "ScreenSaver" };
 
                 Console.WriteLine("Operation Started");
                 _ss.Start();
 
                 if (string.Equals(args[0], COMPRESS))
                 {
-                    _backgroundThread = new Thread(() => Compress(initPath, archPath, compressor, ARCHIVE_SIZE)) { IsBackground = true };
+                    _backgroundThread = new Thread(() => Compress(initPath, archPath, compressor, ARCHIVE_SIZE)) { IsBackground = true, Name = "MainProgram" };
                     _backgroundThread.Start();
                 }
                 else if (string.Equals(args[0], DECOMPRESS))
