@@ -24,10 +24,13 @@ namespace SimpleZipUtility.Queues
 
         public void Enqueue(T e)
         {
-            if (N == pq.Length - 1) 
-                Resize(2 * pq.Length);
-            pq[++N] = e;
-            Swim(N);
+            lock (stub)
+            {
+                if (N == pq.Length - 1)
+                    Resize(2 * pq.Length);
+                pq[++N] = e;
+                Swim(N);
+            }
         }
 
         public T Dequeue()
@@ -53,7 +56,10 @@ namespace SimpleZipUtility.Queues
 
         public T PeekElement()
         {
-            return pq[1];
+            lock(stub)
+            {
+                return pq[1];
+            }
         }
 
         private void Resize(int capacity)

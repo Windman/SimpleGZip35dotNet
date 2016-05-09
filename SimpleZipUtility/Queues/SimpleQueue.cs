@@ -5,10 +5,16 @@ using System.Text;
 
 namespace SimpleZipUtility.Queues
 {
-    public delegate void QueueOverflowEventHandler(object sender);
+    public delegate void QueueOverflowEventHandler(object sender, ElementEventArgs args);
     public delegate void EmptyQueueEventHandler(object sender);
 
-    public class SimpleQueue: Queue<Element>, IQueable<Element> 
+    public class ElementEventArgs
+    {
+        public ElementEventArgs(Element e) { StopElement = e; }
+        public Element StopElement {get; private set;} 
+    }
+
+    public class SimpleQueue : Queue<Element>, IQueable<Element>
     {
         private Object stub = new Object();
 
@@ -26,12 +32,12 @@ namespace SimpleZipUtility.Queues
         {
             if (_capacity > Size)
                 base.Enqueue(item);
-            else RaiseQueueOverflow(); 
+            else RaiseQueueOverflow(new ElementEventArgs(item));
         }
 
         public Element Dequeue()
         {
-            lock(stub)
+            lock (stub)
             {
                 if (IsEmpty)
                 {
@@ -45,9 +51,12 @@ namespace SimpleZipUtility.Queues
 
         public Element PeekElement()
         {
-            return base.Peek();
+            lock (stub)
+            {
+                return base.Peek();
+            }
         }
-        
+
         public bool IsEmpty
         {
             get
@@ -58,16 +67,16 @@ namespace SimpleZipUtility.Queues
                 return false;
             }
         }
-        
+
         public int Size
         {
             get { return Count; }
         }
 
-        protected virtual void RaiseQueueOverflow()
+        protected virtual void RaiseQueueOverflow(ElementEventArgs arg)
         {
             if (QueueOverflow != null)
-                QueueOverflow(this); 
+                QueueOverflow(this, arg);
         }
 
         private void RaiseEmptyQueue()

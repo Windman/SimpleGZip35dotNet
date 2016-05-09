@@ -20,7 +20,7 @@ namespace SimpleZipUtility
         public readonly int _processors;
 
         internal ManualResetEvent _completeEvent = new ManualResetEvent(false);
-        internal ManualResetEvent _stopReadEvent = new ManualResetEvent(false);
+        internal AutoResetEvent _stopReadEvent = new AutoResetEvent(false);
         
         internal long _totalBytesRead;
         internal long _bufferSize;
@@ -86,9 +86,6 @@ namespace SimpleZipUtility
         {
             while (!_readComplete || !_concurentQueue.IsEmpty)
             {
-                if (minPQ.Size > _capacity) //MinPQ limit
-                    continue;
-
                 Element aux = _concurentQueue.Dequeue();
 
                 if (aux != null)
@@ -109,8 +106,7 @@ namespace SimpleZipUtility
             {
                 Element min = _concurentMinPQ.PeekElement();
 
-                //Ошибка min.Number - prevNumber придумать другие решение
-                //Видимо ошибка синхронизации потоков
+                //TODO Possible unhandled situation
                 if (min != null && min.Number - prevNumber == 1)
                 {
 #if DEBUG

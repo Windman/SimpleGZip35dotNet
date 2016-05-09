@@ -43,7 +43,6 @@
   <ItemGroup>
     <Compile Include="BaseEngine.cs" />
     <Compile Include="Element.cs" />
-    <Compile Include="Queues\Concurrent.cs" />
     <Compile Include="Queues\IQueable.cs" />
     <Compile Include="Queues\MinPriorityQueue.cs" />
     <Compile Include="DecompressEngine.cs" />
