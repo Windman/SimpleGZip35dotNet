@@ -5,6 +5,7 @@ using System.Threading;
 
 using SimpleZipUtility.Interfaces;
 using SimpleZipUtility.UtilityExtensions;
+using SimpleZipUtility.Queues;
 
 namespace SimpleZipUtility
 {
@@ -15,7 +16,8 @@ namespace SimpleZipUtility
         public DecompressEngine(IGzipAction gzip, int queueCapacity)
             : base(gzip, queueCapacity)
         {
-
+            _q.QueueOverflow += QueueOverflow;
+            _q.EmptyQueue += EmptyQueue;
         }
 
         public override void WriteStreamSegmentsToQueue(Stream init)
@@ -39,12 +41,6 @@ namespace SimpleZipUtility
 
             while ((readBytes = init.Read(buffer, 0, buffer.Length)) > 0)
             {
-                if (_concurentQueue.Size > _capacity) //Queue limit
-                {
-                    _stopReadEvent.Reset();
-                    _stopReadEvent.WaitOne();
-                }
-
                 if (readBytes < buffer.Length)
                     buffer = buffer.TruncateBuffer(readBytes);
                 
@@ -128,6 +124,17 @@ namespace SimpleZipUtility
             }
 
             return isGzip;
+        }
+
+        private void QueueOverflow(object sender, ElementEventArgs args)
+        {
+            _stopReadEvent.WaitOne();
+            _concurentQueue.Enqueue(args.StopElement);
+        }
+
+        private void EmptyQueue(object sender)
+        {
+            _stopReadEvent.Set();
         }
     }
 }
